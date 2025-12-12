@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BIODIVERSITY_V.2025</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* --- 1. CORE VARIABLES & RESET --- */
+        :root {
+            --bg: #e0e0e0;
+            --surface: #ffffff;
+            --ink: #000000;
+            --acid: #ccff00;
+            --hot: #ff00ff;
+            --cyan: #00ffff;
+            --void: #1a1a1a;
+            --grid-color: rgba(0, 0, 0, 0.1);
+            --border-thick: 4px solid var(--ink);
+            --border-thin: 2px solid var(--ink);
+            --shadow-hard: 8px 8px 0px 0px var(--ink);
+            --shadow-hover: 12px 12px 0px 0px var(--ink);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            cursor: crosshair; /* Brutalist cursor */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--ink);
+            overflow-x: hidden;
+            line-height: 1.5;
+        }
+
+        /* --- 2. TYPOGRAPHY --- */
+        h1, h2, h3, h4 {
+            font-family: 'Archivo', sans-serif;
+            text-transform: uppercase;
+            font-weight: 900;
+            line-height: 0.85;
+        }
+
+        .mega-text {
+            font-size: clamp(4rem, 15vw, 12rem);
+            word-break: break-all;
+            color: var(--ink);
+            text-shadow: 4px 4px 0px var(--acid);
+            position: relative;
+            z-index: 1;
+        }
+
+        .section-header {
+            font-size: clamp(3rem, 8vw, 6rem);
+            background: var(--ink);
+            color: var(--surface);
+            display: inline-block;
+            padding: 10px 30px;
+            transform: skew(-5deg);
+            margin-bottom: 40px;
+            box-shadow: 10px 10px 0px var(--hot);
+        }
+
+        p {
+            font-size: 1.1rem;
+            max-width: 65ch;
+        }
+
+        /* --- 3. LAYOUT UTILITIES --- */
+        .wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            min-height: 100vh;
+            padding: 100px 0;
+            position: relative;
+            border-bottom: var(--border-thick);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* --- 4. ANIMATIONS & SCROLL FX --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(100px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide-in-left {
+            opacity: 0;
+            transform: translateX(-100px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        
+        .slide-in-right {
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slide-in-left.active, .slide-in-right.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Glitch Effect Keyframes */
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        .glitch-hover:hover {
+            animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+            background: var(--cyan) !important;
+            color: var(--ink) !important;
+        }
+
+        /* --- 5. COMPONENTS --- */
+        
+        /* Navbar */
+        .nav-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: var(--surface);
+            border-bottom: var(--border-thick);
+            z-index: 1000;
+        }
+
+        .logo {
+            font-weight: 900;
+            font-size: 1.5rem;
+            background: var(--ink);
+            color: var(--acid);
+            padding: 5px 10px;
+        }
+
+        .menu-link {
+            text-decoration: none;
+            color: var(--ink);
+            font-weight: 700;
+            margin-left: 20px;
+            padding: 5px 10px;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .menu-link:hover {
+            border: var(--border-thin);
+            background: var(--hot);
+            box-shadow: 4px 4px 0px var(--ink);
+        }
+
+        /* Marquee */
+        .marquee {
+            width: 100%;
+            background: var(--acid);
+            border-top: var(--border-thick);
+            border-bottom: var(--border-thick);
+            white-space: nowrap;
+            overflow: hidden;
+            padding: 15px 0;
+            font-family: 'Archivo', sans-serif;
+            font-weight: 900;
+            font-size: 2rem;
+            color: var(--ink);
+        }
+
+        .marquee-content {
+            display: inline-block;
+            animation: scroll 20s linear infinite;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            margin-top: 50px;
+        }
+
+        .brutalist-card {
+            background: var(--surface);
+            border: var(--border-thick);
+            padding: 30px;
+            box-shadow: var(--shadow-hard);
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .brutalist-card:hover {
+            transform: translate(-4px, -4px);
+            box-shadow: var(--shadow-hover);
+            z-index: 10;
+        }
+
+        .card-tag {
+            position: absolute;
+            top: -15px;
+            right: -10px;
+            background: var(--hot);
+            padding: 5px 15px;
+            border: var(--border-thin);
+            font-weight: 700;
+            font-size: 0.9rem;
+            transform: rotate(3deg);
+        }
+
+        /* Accordion / Levels */
+        .level-row {
+            display: flex;
+            align-items: stretch;
+            margin-bottom: 20px;
+            border: var(--border-thick);
+            background: var(--surface);
+            transition: margin 0.3s;
+        }
+
+        .level-row:hover {
+            margin-left: -10px;
+            box-shadow: 10px 10px 0px var(--cyan);
+        }
+
+        .level-number {
+            font-family: 'Archivo', sans-serif;
+            font-size: 4rem;
+            font-weight: 900;
+            padding: 20px;
+            background: var(--ink);
+            color: var(--surface);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+        }
+
+        .level-content {
+            padding: 30px;
+            flex-grow: 1;
+        }
+
+        /* Terminal Window */
+        .terminal {
+            background: var(--void);
+            color: var(--acid);
+            border: var(--border-thick);
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            box-shadow: var(--shadow-hard);
+            width: 100%;
+            max-width: 800px;
+            margin: 40px auto;
+            position: relative;
+        }
+        
+        .terminal-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #333;
+            height: 25px;
+            display: flex;
+            align-items: center;
+            padding-left: 10px;
+            border-bottom: 1px solid #555;
+        }
+
+        .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .red { background: #ff5f56; }
+        .yellow { background: #ffbd2e; }
+        .green { background: #27c93f; }
+
+        .terminal-body {
+            margin-top: 20px;
+        }
+
+        .code-line {
+            display: block;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+        
+        .code-line::before { content: '> '; color: #666; }
+
+        .math-block {
+            border: 1px dashed var(--acid);
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+
+        /* Stickers/Decorations */
+        .sticker {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: 900;
+            text-align: center;
+            transform: rotate(15deg);
+            z-index: 5;
+            pointer-events: none;
+            mix-blend-mode: multiply;
+        }
+
+        .sticker.v1 { background: var(--cyan); top: 10%; right: 5%; border: var(--border-thin); }
+        .sticker.v2 { background: var(--hot); bottom: 10%; left: 5%; border: var(--border-thin); animation: spin 10s linear infinite; }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Footer */
+        footer {
+            background: var(--ink);
+            color: var(--bg);
+            padding: 80px 20px;
+            text-align: center;
+            border-top: 5px solid var(--acid);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .mega-text { font-size: 15vw; }
+            .section-header { font-size: 10vw; transform: skew(0); }
+            .card-grid { grid-template-columns: 1fr; }
+            .level-row { flex-direction: column; }
+            .level-number { width: 100%; padding: 10px; font-size: 2rem; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- NAV -->
+    <nav class="nav-bar slide-in-left">
+        <div class="logo">BIO_DIV // 2025</div>
+        <div class="menu">
+            <a href="#levels" class="menu-link">LEVELS</a>
+            <a href="#math" class="menu-link">DATA</a>
+            <a href="#fieldwork" class="menu-link">FIELD</a>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section id="hero" style="min-height: 100vh; align-items: center; justify-content: center; text-align: center; overflow: hidden;">
+        <div class="wrapper">
+            <div class="sticker v1">EST.<br>2025</div>
+            
+            <h1 class="mega-text reveal active">
+                BIODIVERSITY
+            </h1>
+            
+            <div class="reveal" style="background: var(--surface); border: var(--border-thick); padding: 20px; display: inline-block; margin-top: -20px; position: relative; z-index: 2; box-shadow: var(--shadow-hard);">
+                <p style="font-weight: 700;">
+                    AUTHORS: LEO_MARIO_RICK <span style="background: var(--acid); padding: 0 5px;">[VER 1.0]</span>
+                </p>
+                <p style="margin-top: 10px; font-size: 0.9rem; text-transform: uppercase;">
+                    System Status: Critical // Resilience: Loading...
+                </p>
+            </div>
+        </div>
+
+        <div style="position: absolute; bottom: 0; width: 100%;">
+            <div class="marquee">
+                <div class="marquee-content">
+                    GENETIC DIVERSITY +++ SPECIES RICHNESS +++ ECOSYSTEM COMPLEXITY +++ SURVIVAL PROTOCOLS INITIATED +++ CAIE TOPIC 18.1 +++
+                    GENETIC DIVERSITY +++ SPECIES RICHNESS +++ ECOSYSTEM COMPLEXITY +++ SURVIVAL PROTOCOLS INITIATED +++ CAIE TOPIC 18.1 +++
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DEFINITIONS SECTION -->
+    <section id="definitions">
+        <div class="wrapper">
+            <h2 class="section-header slide-in-left">CORE_DEFINITIONS</h2>
+            <p class="reveal" style="font-size: 1.5rem; margin-bottom: 40px; border-left: 5px solid var(--hot); padding-left: 20px;">
+                Topic 18.1 Protocol: Establish baseline understanding of biological units.
+            </p>
+
+            <div class="card-grid">
+                <!-- Card 1 -->
+                <div class="brutalist-card reveal">
+                    <div class="card-tag">UNIT_01</div>
+                    <div style="font-size: 3rem; margin-bottom: 20px;"><i class="fa-solid fa-dna"></i></div>
+                    <h3>SPECIES</h3>
+                    <hr style="border-top: var(--border-thin); margin: 15px 0;">
+                    <p>A group of organisms capable of interbreeding to produce <span style="background: var(--acid);">FERTILE OFFSPRING</span>. Must be reproductively isolated from other groups.</p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="brutalist-card reveal" style="transition-delay: 0.1s;">
+                    <div class="card-tag" style="background: var(--cyan);">UNIT_02</div>
+                    <div style="font-size: 3rem; margin-bottom: 20px;"><i class="fa-solid fa-circle-nodes"></i></div>
+                    <h3>ECOSYSTEM</h3>
+                    <hr style="border-top: var(--border-thin); margin: 15px 0;">
+                    <p>Self-contained community. Biotic meets Abiotic. An interactive complex where energy flows and nutrients cycle.</p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="brutalist-card reveal" style="transition-delay: 0.2s;">
+                    <div class="card-tag" style="background: var(--hot); color: white;">UNIT_03</div>
+                    <div style="font-size: 3rem; margin-bottom: 20px;"><i class="fa-solid fa-location-crosshairs"></i></div>
+                    <h3>NICHE</h3>
+                    <hr style="border-top: var(--border-thin); margin: 15px 0;">
+                    <p>The Role. The Job. The Address. How a species fits into the grid of interactions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LEVELS SECTION -->
+    <section id="levels" style="background: var(--surface);">
+        <div class="wrapper">
+            <h2 class="section-header slide-in-right" style="background: var(--acid); color: var(--ink);">THE_TRIAD</h2>
+            
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                
+                <div class="level-row slide-in-left" style="width: 100%;">
+                    <div class="level-number">01</div>
+                    <div class="level-content">
+                        <h3 style="font-size: 2rem;">GENETIC DIVERSITY</h3>
+                        <p style="margin-top: 10px;">The raw code. Variation within species. </p>
+                        <div style="margin-top: 15px; font-family: 'JetBrains Mono'; font-size: 0.9rem;">
+                            SOURCE: Mutation / Recombination / Flow<br>
+                            OUTPUT: Adaptation & Evolution
+                        </div>
+                    </div>
+                </div>
+
+                <div class="level-row slide-in-right" style="width: 100%; margin-left: auto;">
+                    <div class="level-number" style="background: var(--hot);">02</div>
+                    <div class="level-content">
+                        <h3 style="font-size: 2rem;">SPECIES DIVERSITY</h3>
+                        <p style="margin-top: 10px;">The inventory.</p>
+                        <ul style="margin-top: 15px; list-style: none;">
+                            <li style="margin-bottom: 5px;">> RICHNESS (Total Count)</li>
+                            <li>> EVENNESS (Relative Abundance)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="level-row slide-in-left" style="width: 100%;">
+                    <div class="level-number" style="background: var(--cyan);">03</div>
+                    <div class="level-content">
+                        <h3 style="font-size: 2rem;">ECOSYSTEM DIVERSITY</h3>
+                        <p style="margin-top: 10px;">The landscape. Forests, Deserts, Reefs.</p>
+                        <div style="margin-top: 15px;">
+                            <span style="border: 1px solid black; padding: 2px 5px; margin-right: 5px;">BIOTIC</span>
+                            <span style="border: 1px solid black; padding: 2px 5px;">ABIOTIC</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- MATH / TERMINAL SECTION -->
+    <section id="math" style="background: var(--bg);">
+        <div class="wrapper" style="text-align: center;">
+            <div class="sticker v2">DON'T<br>PANIC</div>
+            <h2 class="section-header reveal">CALCULATION_MODE</h2>
+            
+            <!-- Simpson's Index Terminal -->
+            <div class="terminal reveal">
+                <div class="terminal-header">
+                    <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+                </div>
+                <div class="terminal-body" style="text-align: left;">
+                    <span class="code-line">run simpsons_index.exe</span>
+                    <span class="code-line">loading variables...</span>
+                    
+                    <div class="math-block">
+                        D = 1 - Σ(n/N)²
+                    </div>
+                    
+                    <span class="code-line" style="color: var(--hot);">// INPUTS defined:</span>
+                    <span class="code-line">let n = total_individuals_of_species;</span>
+                    <span class="code-line">let N = total_individuals_all_species;</span>
+                    <br>
+                    <span class="code-line" style="color: var(--cyan);">// OUTPUT:</span>
+                    <span class="code-line">Range: 0 to 1. Higher value = Higher Diversity.</span>
+                </div>
+            </div>
+
+            <!-- Mark Recapture Terminal -->
+            <div class="terminal reveal" style="border-color: var(--hot); color: var(--hot); max-width: 700px;">
+                 <div class="terminal-header" style="background: #220022;">
+                    <span class="dot red"></span>
+                </div>
+                <div class="terminal-body" style="text-align: left;">
+                    <span class="code-line">run mark_release_recapture.py</span>
+                    <span class="code-line">method: Lincoln-Petersen Index</span>
+                    
+                    <div class="math-block" style="border-color: var(--hot);">
+                        N = (n₁ × n₂) / m₂
+                    </div>
+                    
+                    <span class="code-line">> n1: Caught, Marked, Released (50)</span>
+                    <span class="code-line">> n2: Caught in 2nd sample (40)</span>
+                    <span class="code-line">> m2: Already marked in 2nd sample (10)</span>
+                    <br>
+                    <span class="code-line" style="background: var(--hot); color: white; display: inline-block; padding: 0 5px;">RESULT: N = 200</span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FIELDWORK SECTION -->
+    <section id="fieldwork" style="background: var(--cyan); border-bottom: none;">
+        <div class="wrapper">
+            <h2 class="section-header slide-in-left" style="background: var(--surface); color: var(--ink);">FIELD_OPERATIONS</h2>
+            
+            <div class="card-grid">
+                <div class="brutalist-card glitch-hover reveal">
+                    <h3>QUADRAT</h3>
+                    <p><strong>TARGET:</strong> Plants / Slow movers.</p>
+                    <p><strong>METHOD:</strong> Random placement (RNG).</p>
+                    <div style="font-size: 4rem; text-align: right; opacity: 0.2;"><i class="fa-regular fa-square"></i></div>
+                </div>
+
+                <div class="brutalist-card glitch-hover reveal" style="transition-delay: 0.1s;">
+                    <h3>TRANSECT</h3>
+                    <p><strong>TARGET:</strong> Environmental gradients.</p>
+                    <p><strong>METHOD:</strong> Line from point A to B.</p>
+                    <div style="font-size: 4rem; text-align: right; opacity: 0.2;"><i class="fa-solid fa-ruler-horizontal"></i></div>
+                </div>
+
+                <div class="brutalist-card glitch-hover reveal" style="transition-delay: 0.2s;">
+                    <h3>CORRELATION</h3>
+                    <p><strong>PEARSON'S:</strong> Linear / Normal Data.</p>
+                    <p><strong>SPEARMAN'S:</strong> Ranked / Non-normal.</p>
+                    <div style="font-size: 4rem; text-align: right; opacity: 0.2;"><i class="fa-solid fa-chart-line"></i></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <h2 style="font-size: 4rem; margin-bottom: 20px;">END_OF_DATA</h2>
+        <p>CAIE SYLLABUS REFERENCE: TOPIC 18.1</p>
+        <p style="opacity: 0.5; margin-top: 20px;">DESIGNED BY AI // BRUTALISM MODE</p>
+    </footer>
+
+    <script>
+        // INTERSECTION OBSERVER FOR SCROLL ANIMATIONS
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        // Select elements to animate
+        const revealElements = document.querySelectorAll('.reveal');
+        const slideLeftElements = document.querySelectorAll('.slide-in-left');
+        const slideRightElements = document.querySelectorAll('.slide-in-right');
+
+        revealElements.forEach(el => observer.observe(el));
+        slideLeftElements.forEach(el => observer.observe(el));
+        slideRightElements.forEach(el => observer.observe(el));
+
+        // Custom Cursor Effect (Optional simple follow)
+        // Note: Keeping it CSS-only 'crosshair' for performance, 
+        // but here is a console log to prove JS is running.
+        console.log("SYSTEM READY. BRUTALISM ENGAGED.");
+    </script>
+</body>
+</html>
